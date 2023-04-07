@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useSubscribeCollection } from "@/util/firestore-hooks";
-import { ChatMessage, Scenario, getChatMessageCollection } from "@/models/store";
+import { ChatMessage, Scenario, getChatMessageCollection } from "@/models/store_legacy";
 import { doc, orderBy, query, QuerySnapshot, runTransaction } from "@firebase/firestore";
 import { openai } from "@/lib/openapi";
 import { store } from "@/lib/firestore";

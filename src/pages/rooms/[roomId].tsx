@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useSubscribeDocument } from "@/util/firestore-hooks";
-import { getRoomCollection } from "@/models/store";
+import { getRoomCollection } from "@/models/store_legacy";
 import { doc } from "@firebase/firestore";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { Chat } from "@/feature/chat";

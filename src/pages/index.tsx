@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { getRoomCollection, getScenarioCollection, Scenario } from "@/models/store";
+import { getRoomCollection, getScenarioCollection, Scenario } from "@/models/store_legacy";
 import { addDoc } from "@firebase/firestore";
 import { useSubscribeCollection } from "@/util/firestore-hooks";
 
