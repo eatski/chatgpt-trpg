@@ -1,0 +1,40 @@
+import { z } from "zod"
+
+export const scene =  z.object({
+    systemPrompt: z.string(),
+    hiddenSystemPrompt: z.boolean(),
+})
+
+export const scenario =  z.object({
+    title: z.string(),
+    description: z.string(),
+    scenes: z.intersection(z.record(scene),z.object({default: scene})),
+})
+
+export const userInput =  z.object({
+    userId: z.string(),
+    message: z.string(),
+})
+
+export const visibility = z.enum(["public", "private", "hidden"])
+
+export const assistantResponse = z.object({
+    tag: z.string(),
+    inputHandling: z.optional(z.object({
+        visibility,
+    })),
+    response: z.optional(z.object({
+        content: z.string(),
+        visibility,
+    })),
+    image: z.optional(z.object({
+        promptToGenerate: z.optional(z.string()),
+        visibility,
+    })),
+    changeScene: z.optional(z.string()),
+})
+
+export const room = z.object({
+    createdAt: z.number(),
+    scenario,
+});
