@@ -1,5 +1,8 @@
+import { test } from "vitest";
 import { room, userInput, assistantResponse, scenario } from "./schema";
 import { ExtractZodSchema, StorePathMap } from "./util";
+
+test("noop")
 
 const storePathMap = {
     rooms: {

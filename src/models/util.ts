@@ -1,6 +1,5 @@
 import { collection, CollectionReference, DocumentData, QueryDocumentSnapshot, SnapshotOptions } from "@firebase/firestore";
 import { z, ZodSchema } from "zod";
-import { never } from "@/lib/util";
 
 class ZodSchemaConverter<S extends ZodSchema<DocumentData>> {
     constructor(private schema: S) {}
@@ -14,12 +13,12 @@ class ZodSchemaConverter<S extends ZodSchema<DocumentData>> {
       return this.schema.parse(data);
     }
 }
-type FirestoreCollection = {
+type MappedItem = {
     document: z.ZodSchema<DocumentData>;
-    collections?: Record<string, FirestoreCollection>;
+    collections?: Record<string, MappedItem>;
 };
   
-export type StorePathMap = Record<string, FirestoreCollection>;
+export type StorePathMap = Record<string, MappedItem>;
 type StorePathIncludesNotString<M extends StorePathMap> = keyof M | StorePathRecur<M, keyof M>;
 type StorePathRecur<M extends StorePathMap, K extends keyof M> = K extends string
   ? M[K]['collections'] extends StorePathMap
@@ -29,13 +28,7 @@ type StorePathRecur<M extends StorePathMap, K extends keyof M> = K extends strin
 
 type StorePath<M extends StorePathMap> = StorePathIncludesNotString<M> extends string ? StorePathIncludesNotString<M> : never;
 
-// type ExtractZodSchema<M extends StorePathMap, P extends StorePath<M>> = 
-//   P extends `${infer K extends (keyof M) & string}/${string}/${infer Rest}` ? 
-//     Rest extends StorePath<Exclude<M[K]['collections'],undefined>> ? 
-//       ExtractZodSchema<Exclude<M[K]['collections'],undefined>, Rest> : 
-//       never : P extends keyof M ? M[P]['document'] : never;
-
-type ExtractFirstKey<P, M extends StorePathMap> = P extends `${infer K extends (keyof M) & string}/${string}/${infer Rest}` ? K : P;
+type ExtractFirstKey<P, M extends StorePathMap> = P extends `${infer K extends (keyof M) & string}/${string}/${string}` ? K : P;
 
 type ExtractRestPath<P, K extends string, M extends StorePathMap> = P extends `${K}/${string}/${infer Rest}` ? Rest extends StorePath<Exclude<M[K]['collections'], undefined>> ? Rest : never : never;
 
@@ -54,16 +47,27 @@ export const getCollectionRef = <M extends StorePathMap, P extends StorePath<M>>
   
   const pathSegments = path.split("/");
 
-
-  const zodSchema = pathSegments.reduce<null | ZodSchema>((prevRef, segment, idx) => {
-    return never("todo")
-  }, null);
+  const zodSchema = pathSegments.reduce<{type: "item",value?: MappedItem} | {type: "map", value?: StorePathMap}>((prev, segment) => {
+    if(prev.type === "map"){
+      return {
+        type: "item",
+        value: prev.value?.[segment]
+      }
+    }
+    return {
+      type: "map",
+      value: prev.value?.collections
+    }
+  }, {
+    type:"map",
+    value: map
+  });
   
-  if(!zodSchema){
+  if(zodSchema.type === "map" || !zodSchema.value){
     throw new Error()
   }
 
-  const converter = new ZodSchemaConverter(zodSchema);
+  const converter = new ZodSchemaConverter(zodSchema.value.document);
   return collection(root,path).withConverter<z.infer<ExtractZodSchema<M,P>>>(converter as never);
 }
 
