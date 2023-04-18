@@ -7,10 +7,12 @@ type Props = {
 };
 
 const Chat: React.FC<Props> = ({ roomId, scenario }) => {
-  return <section>
-    <h2>Room: {roomId}</h2>
-    <code>{JSON.stringify(scenario)}</code>
-  </section>;
+  return (
+    <section>
+      <h2>Room: {roomId}</h2>
+      <code>{JSON.stringify(scenario)}</code>
+    </section>
+  );
 };
 
 export { Chat };

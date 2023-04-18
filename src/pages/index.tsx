@@ -17,13 +17,14 @@ type Props = {
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
-  
   const getScene = async (name: string) => {
     return {
-      systemPrompt:(await readFile(resolve(process.cwd() ,"mocks","scenarios","yaminabe",`${name}.md`), "utf-8")).toString()
-    }
-  }
-  
+      systemPrompt: (
+        await readFile(resolve(process.cwd(), "mocks", "scenarios", "yaminabe", `${name}.md`), "utf-8")
+      ).toString(),
+    };
+  };
+
   return {
     props: {
       scenarios: [
@@ -37,13 +38,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
               cooking: await getScene("cooking"),
               select: await getScene("select"),
               ending: await getScene("ending"),
-            }
-          }
-        }
+            },
+          },
+        },
       ],
     },
   };
-}
+};
 
 const CreateRoom = ({ scenarios }: Props) => {
   const router = useRouter();
@@ -58,7 +59,7 @@ const CreateRoom = ({ scenarios }: Props) => {
       if (!scenario) {
         throw new Error("Scenario not found");
       }
-      const roomsCollection = getCollectionRef(appNameSpace,storePathMap,"rooms")
+      const roomsCollection = getCollectionRef(appNameSpace, storePathMap, "rooms");
       const roomRef = await addDoc(roomsCollection, {
         createdAt: new Date().getTime(),
         scenario: scenario.data,

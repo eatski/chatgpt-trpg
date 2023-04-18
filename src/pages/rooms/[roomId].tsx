@@ -12,7 +12,10 @@ type Props = {
 };
 
 const RoomPage = ({ roomId }: Props) => {
-  const memorizedGetRoomCollection = useMemo(() => doc(getCollectionRef(appNameSpace,storePathMap,"rooms"), roomId), [roomId]);
+  const memorizedGetRoomCollection = useMemo(
+    () => doc(getCollectionRef(appNameSpace, storePathMap, "rooms"), roomId),
+    [roomId],
+  );
   const room = useSubscribeDocument(memorizedGetRoomCollection);
 
   switch (room.status) {
