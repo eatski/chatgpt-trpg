@@ -43,7 +43,7 @@ type ExtractZodSchemaHelper<M extends StorePathMap, P extends StorePath<M>, K ex
       : never
     : never;
 
-export const getCollectionRef = <M extends StorePathMap, P extends StorePath<M>>(root: DocumentReference,map: M,path: P) => {
+export const createCollectionRefFactory = <M extends StorePathMap>(root: DocumentReference,map: M) => <P extends StorePath<M>>(path: P) => {
   
   const pathSegments = path.split("/");
 

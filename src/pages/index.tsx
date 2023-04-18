@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { addDoc } from "@firebase/firestore";
 import { Scenario } from "@/models/types";
-import { getCollectionRef } from "@/models/util";
-import { appNameSpace } from "@/lib/firestore";
-import { storePathMap } from "@/models/path";
+import { getCollectionRef } from "@/lib/firestore";
 import { GetServerSideProps } from "next";
 import { readFile } from "fs/promises";
 import { resolve } from "path";
@@ -59,7 +57,7 @@ const CreateRoom = ({ scenarios }: Props) => {
       if (!scenario) {
         throw new Error("Scenario not found");
       }
-      const roomsCollection = getCollectionRef(appNameSpace, storePathMap, "rooms");
+      const roomsCollection = getCollectionRef("rooms")
       const roomRef = await addDoc(roomsCollection, {
         createdAt: new Date().getTime(),
         scenario: scenario.data,

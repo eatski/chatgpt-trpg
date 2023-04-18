@@ -1,3 +1,5 @@
+import { storePathMap } from "@/models/path";
+import { createCollectionRefFactory } from "@/models/util";
 import { initializeApp } from "@firebase/app";
 import { doc, initializeFirestore } from "@firebase/firestore";
 
@@ -14,3 +16,5 @@ const app = initializeApp({
 export const store = initializeFirestore(app, {});
 
 export const appNameSpace = doc(store, "/chatgpt-trpg/v1");
+
+export const getCollectionRef = createCollectionRefFactory(appNameSpace,storePathMap)

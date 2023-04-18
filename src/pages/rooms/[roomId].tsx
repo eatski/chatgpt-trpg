@@ -3,9 +3,7 @@ import { useSubscribeDocument } from "@/util/firestore-hooks";
 import { doc } from "@firebase/firestore";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { Chat } from "@/feature/chat";
-import { getCollectionRef } from "@/models/util";
-import { appNameSpace } from "@/lib/firestore";
-import { storePathMap } from "@/models/path";
+import { getCollectionRef } from "@/lib/firestore";
 
 type Props = {
   roomId: string;
@@ -13,7 +11,7 @@ type Props = {
 
 const RoomPage = ({ roomId }: Props) => {
   const memorizedGetRoomCollection = useMemo(
-    () => doc(getCollectionRef(appNameSpace, storePathMap, "rooms"), roomId),
+    () => doc(getCollectionRef("rooms"), roomId),
     [roomId],
   );
   const room = useSubscribeDocument(memorizedGetRoomCollection);
