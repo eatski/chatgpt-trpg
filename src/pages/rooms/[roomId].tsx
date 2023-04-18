@@ -1,16 +1,18 @@
 import React, { useMemo } from "react";
 import { useSubscribeDocument } from "@/util/firestore-hooks";
-import { getRoomCollection } from "@/models/store_legacy";
 import { doc } from "@firebase/firestore";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { Chat } from "@/feature/chat";
+import { getCollectionRef } from "@/models/util";
+import { appNameSpace } from "@/lib/firestore";
+import { storePathMap } from "@/models/path";
 
 type Props = {
   roomId: string;
 };
 
 const RoomPage = ({ roomId }: Props) => {
-  const memorizedGetRoomCollection = useMemo(() => doc(getRoomCollection(), roomId), [roomId]);
+  const memorizedGetRoomCollection = useMemo(() => doc(getCollectionRef(appNameSpace,storePathMap,"rooms"), roomId), [roomId]);
   const room = useSubscribeDocument(memorizedGetRoomCollection);
 
   switch (room.status) {

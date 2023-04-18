@@ -14,7 +14,7 @@ export const storePathMap = {
             }
         }
     },
-    scenario: {
+    scenarios: {
         document: scenario,
     }
 } as const satisfies StorePathMap

@@ -1,15 +1,14 @@
 import { z } from "zod"
 
 export const scene =  z.object({
-    systemPrompt: z.string(),
-    hiddenSystemPrompt: z.boolean(),
-})
+    systemPrompt: z.string().describe("システムに渡される、コンテキストとなるプロンプト"),
+}).describe("シナリオの中に展開されるシーン")
 
 export const scenario =  z.object({
-    title: z.string(),
-    description: z.string(),
-    scenes: z.intersection(z.record(scene),z.object({default: scene})),
-})
+    title: z.string().describe("タイトル"),
+    description: z.string().describe("説明"),
+    scenes: z.intersection(z.record(scene),z.object({default: scene})).describe("シナリオの中に展開されるシーン"),
+}).describe("ゲームシナリオ")
 
 export const userInput =  z.object({
     userId: z.string(),

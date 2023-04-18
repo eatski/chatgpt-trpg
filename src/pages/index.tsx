@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { getRoomCollection, getScenarioCollection, Scenario } from "@/models/store_legacy";
 import { addDoc } from "@firebase/firestore";
-import { useSubscribeCollection } from "@/util/firestore-hooks";
+import { Scenario } from "@/models/types";
+import { getCollectionRef } from "@/models/util";
+import { appNameSpace } from "@/lib/firestore";
+import { storePathMap } from "@/models/path";
+import { GetServerSideProps } from "next";
+import { readFile } from "fs/promises";
+import { resolve } from "path";
 
 type Props = {
   scenarios: {
@@ -10,6 +15,35 @@ type Props = {
     data: Scenario;
   }[];
 };
+
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  
+  const getScene = async (name: string) => {
+    return {
+      systemPrompt:(await readFile(resolve(process.cwd() ,"mocks","scenarios","yaminabe",`${name}.md`), "utf-8")).toString()
+    }
+  }
+  
+  return {
+    props: {
+      scenarios: [
+        {
+          id: "yaminabe",
+          data: {
+            title: "闇鍋",
+            description: "闇鍋をするよ",
+            scenes: {
+              default: await getScene("default"),
+              cooking: await getScene("cooking"),
+              select: await getScene("select"),
+              ending: await getScene("ending"),
+            }
+          }
+        }
+      ],
+    },
+  };
+}
 
 const CreateRoom = ({ scenarios }: Props) => {
   const router = useRouter();
@@ -24,7 +58,8 @@ const CreateRoom = ({ scenarios }: Props) => {
       if (!scenario) {
         throw new Error("Scenario not found");
       }
-      const roomRef = await addDoc(getRoomCollection(), {
+      const roomsCollection = getCollectionRef(appNameSpace,storePathMap,"rooms")
+      const roomRef = await addDoc(roomsCollection, {
         createdAt: new Date().getTime(),
         scenario: scenario.data,
       });
@@ -66,23 +101,5 @@ const CreateRoom = ({ scenarios }: Props) => {
     </div>
   );
 };
-const scenarioCollection = getScenarioCollection();
 
-const CreateRoomPage = () => {
-  const scenarios = useSubscribeCollection(scenarioCollection);
-
-  switch (scenarios.status) {
-    case "loading":
-      return <p>Loading...</p>;
-    case "error":
-      return <p>Error occurred.</p>;
-    case "not-found":
-      return <p>Not found.</p>;
-    default:
-      // eslint-disable-next-line no-case-declarations
-      const scenarioData = scenarios.data?.docs.map((doc) => ({ id: doc.id, data: doc.data() })) || [];
-      return <CreateRoom scenarios={scenarioData} />;
-  }
-};
-
-export default CreateRoomPage;
+export default CreateRoom;

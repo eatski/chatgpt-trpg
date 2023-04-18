@@ -1,4 +1,4 @@
-import { collection, CollectionReference, DocumentData, QueryDocumentSnapshot, SnapshotOptions } from "@firebase/firestore";
+import { collection, DocumentData, DocumentReference, QueryDocumentSnapshot, SnapshotOptions } from "@firebase/firestore";
 import { z, ZodSchema } from "zod";
 
 class ZodSchemaConverter<S extends ZodSchema<DocumentData>> {
@@ -43,7 +43,7 @@ type ExtractZodSchemaHelper<M extends StorePathMap, P extends StorePath<M>, K ex
       : never
     : never;
 
-export const getCollectionRef = <M extends StorePathMap, P extends StorePath<M>>(root: CollectionReference,map: M,path: P) => {
+export const getCollectionRef = <M extends StorePathMap, P extends StorePath<M>>(root: DocumentReference,map: M,path: P) => {
   
   const pathSegments = path.split("/");
 
