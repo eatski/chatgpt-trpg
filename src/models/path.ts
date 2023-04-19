@@ -8,9 +8,9 @@ export const storePathMap = {
     collections: {
       chat: {
         document: z.object({
-            user: userInput,
-            assistant: z.optional(assistantResponse)
-        })
+          user: userInput,
+          assistant: z.optional(assistantResponse),
+        }),
       },
     },
   },

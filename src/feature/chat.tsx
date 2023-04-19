@@ -32,7 +32,7 @@ const Chat: React.FC<Props> = ({ roomId, scenario }) => {
                   content: JSON.stringify(res),
                 });
               }
-            }
+            };
             const assistant = item.data().assistant;
             assistant?.responses?.forEach(pushMessage);
             assistant?.response && pushMessage(assistant.response);
@@ -59,7 +59,7 @@ const Chat: React.FC<Props> = ({ roomId, scenario }) => {
                 content: chat.user.message,
               },
             ],
-            temperature: 0.1
+            temperature: 0.1,
           })
           .then((res) => {
             const content = res.data.choices[0].message?.content;

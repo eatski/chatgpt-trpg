@@ -57,7 +57,7 @@ const CreateRoom = ({ scenarios }: Props) => {
       if (!scenario) {
         throw new Error("Scenario not found");
       }
-      const roomsCollection = getCollectionRef("rooms")
+      const roomsCollection = getCollectionRef("rooms");
       const roomRef = await addDoc(roomsCollection, {
         createdAt: new Date().getTime(),
         scenario: scenario.data,

@@ -17,4 +17,4 @@ export const store = initializeFirestore(app, {});
 
 export const appNameSpace = doc(store, "/chatgpt-trpg/v1");
 
-export const getCollectionRef = createCollectionRefFactory(appNameSpace,storePathMap)
+export const getCollectionRef = createCollectionRefFactory(appNameSpace, storePathMap);
