@@ -21,15 +21,18 @@ export const userInput = z.object({
 
 export const visibility = z.enum(["public", "private", "hidden"]);
 
-const response = z.union([z.object({
+export const response = z.union([
+  z.object({
     type: z.optional(z.literal("text")),
     content: z.string(),
-    visibility
-}),z.object({
+    visibility,
+  }),
+  z.object({
     type: z.literal("image"),
     promptToGenerate: z.string(),
-    visibility
-})])
+    visibility,
+  }),
+]);
 
 export const assistantResponse = z.object({
   response: z.optional(response),
