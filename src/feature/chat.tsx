@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from "react";
-import { Response, Scenario } from "@/models/types";
+import { Scenario } from "@/models/types";
 import { addDoc, onSnapshot, setDoc } from "@firebase/firestore";
 import { getCollectionRef } from "@/lib/firestore";
 import { useSubscribeCollection } from "@/util/firestore-hooks";
@@ -22,26 +22,18 @@ const Chat: React.FC<Props> = ({ roomId, scenario }) => {
       const chatNeedRes = snapshot.docs.find((item) => !item.data().assistant);
       if (chatNeedRes) {
         const history = snapshot.docs
-          .filter((item) => item.data().assistant)
           .flatMap<ChatCompletionRequestMessage>((item) => {
-            const assistantMessages: ChatCompletionRequestMessage[] = [];
-            const pushMessage = (res: Response) => {
-              if (res.type === "text") {
-                assistantMessages.push({
-                  role: "assistant",
-                  content: JSON.stringify(res),
-                });
-              }
-            };
             const assistant = item.data().assistant;
-            assistant?.responses?.forEach(pushMessage);
-            assistant?.response && pushMessage(assistant.response);
-            return [
+            return assistant ? [
               {
                 role: "user",
                 content: item.data().user.message,
               },
-              ...assistantMessages,
+              {
+                role: "assistant",
+                content: JSON.stringify(assistant),
+              },
+            ] : [
             ];
           });
         const chat = chatNeedRes.data();
