@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useSubscribeDocument } from "@/util/firestore-hooks";
 import { doc } from "@firebase/firestore";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { Chat } from "@/feature/chat";
+import { Chat } from "@/features/chat";
 import { getCollectionRef } from "@/lib/firestore";
 
 type Props = {
