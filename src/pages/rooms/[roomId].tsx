@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useSubscribeDocument } from "@/util/firestore-hooks";
 import { doc } from "@firebase/firestore";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { Chat } from "@/features/game/game";
+import { Session } from "@/features/session";
 import { getCollectionRef } from "@/lib/firestore";
 
 type Props = {
@@ -21,7 +21,7 @@ const RoomPage = ({ roomId }: Props) => {
       return <p>Error occurred.</p>;
     default:
       return (
-        <Chat roomId={roomId} scenario={room.data.scenario} />
+        <Session roomId={roomId} scenario={room.data.scenario} />
       );
   }
 };

@@ -10,7 +10,7 @@ type Props = {
   scenario: Scenario;
 };
 
-const Chat: React.FC<Props> = ({ roomId, scenario }) => {
+const Session: React.FC<Props> = ({ roomId, scenario }) => {
   const userId = "test";
   const chatCollection = useMemo(() => getCollectionRef(`rooms/${roomId}/chat`), [roomId]);
 
@@ -51,4 +51,4 @@ const Chat: React.FC<Props> = ({ roomId, scenario }) => {
   );
 };
 
-export { Chat };
+export { Session };
