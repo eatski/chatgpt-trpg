@@ -37,6 +37,7 @@ const Session: React.FC<Props> = ({ roomId, scenario }) => {
                   userId,
                   message: input,
                 },
+                createdAt: new Date().getTime(),
               }).then(() => {
                 setInput("");
               });

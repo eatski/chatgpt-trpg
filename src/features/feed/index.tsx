@@ -1,6 +1,7 @@
 import { getCollectionRef } from "@/lib/firestore";
 import { Interaction } from "@/models/types";
 import { useSubscribeCollection } from "@/util/firestore-hooks";
+import { orderBy, query } from "@firebase/firestore";
 import React, { useMemo } from "react";
 import { Message, MessageFeedView } from "./FeedView";
 
@@ -9,7 +10,7 @@ type Props = {
 }
 
 export const Feed: React.FC<Props> = ({roomId}) => {
-    const chatCollection = useMemo(() => getCollectionRef(`rooms/${roomId}/chat`), [roomId]);
+    const chatCollection = useMemo(() => query(getCollectionRef(`rooms/${roomId}/chat`),orderBy("createdAt")), [roomId]);
     const state = useSubscribeCollection(chatCollection);
     switch (state.status) {
         case "success":

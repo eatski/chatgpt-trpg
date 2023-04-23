@@ -59,6 +59,7 @@ export const useSubmitChatGpt = ({ roomId, scenario }: Props) => {
             setDoc(chatNeedRes.ref, {
               user: chat.user,
               assistant: assistantRes,
+              createdAt: chat.createdAt,
             });
           });
       }
