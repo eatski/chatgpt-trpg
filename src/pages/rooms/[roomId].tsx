@@ -21,11 +21,7 @@ const RoomPage = ({ roomId }: Props) => {
       return <p>Error occurred.</p>;
     default:
       return (
-        <div>
-          <h1>{room.data.scenario.title}</h1>
-          <p>{room.data.createdAt.toString()}</p>
-          <Chat roomId={roomId} scenario={room.data.scenario} />
-        </div>
+        <Chat roomId={roomId} scenario={room.data.scenario} />
       );
   }
 };
