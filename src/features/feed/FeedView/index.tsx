@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './styles.module.css';
 
 export type Message = {
-  type: 'systemMessage' | 'yourMessage' | 'otherMessage' | 'assistantMessage';
+  type: 'yourMessage' | 'otherMessage' | 'assistantMessage';
   text: string;
 } | {
   type: 'loading';
@@ -26,9 +26,7 @@ export const MessageFeedView: React.FC<Props> = ({ messages }) => {
 
         const isYourMessage = message.type === 'yourMessage';
         const messageClass =
-          message.type === 'systemMessage'
-            ? styles.system
-            : isYourMessage
+            isYourMessage
             ? styles.you
             : styles.other;
         const messageContainerClass = isYourMessage

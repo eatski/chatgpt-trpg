@@ -36,10 +36,6 @@
     margin: 0;
     word-wrap: break-word;
   }
-
-  .system {
-    /* Customize the appearance of system messages */
-  }
   
   .spinnerContainer {
     display: flex;
