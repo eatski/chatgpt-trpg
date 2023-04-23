@@ -2,7 +2,7 @@ import { getCollectionRef } from "@/lib/firestore";
 import { openai } from "@/lib/openapi";
 import { assistantResponse } from "@/models/schema";
 import { Scenario } from "@/models/types";
-import { onSnapshot, setDoc } from "@firebase/firestore";
+import { onSnapshot, orderBy, query, setDoc } from "@firebase/firestore";
 import { ChatCompletionRequestMessage } from "openai";
 import { useEffect, useMemo } from "react";
 
@@ -12,9 +12,12 @@ type Props = {
 };
 
 export const useSubmitChatGpt = ({ roomId, scenario }: Props) => {
-  const chatCollection = useMemo(() => getCollectionRef(`rooms/${roomId}/chat`), [roomId]);
+  const chatCollection = useMemo(() =>  query(getCollectionRef(`rooms/${roomId}/chat`), orderBy("createdAt")), [roomId]);
   useEffect(() => {
     return onSnapshot(chatCollection, (snapshot) => {
+      const currentSceneName = snapshot.docs.reduce((acc,cur) => {
+        return cur.data().assistant?.changeScene || acc;
+      },"default")
       const chatNeedRes = snapshot.docs.find((item) => !item.data().assistant);
       if (chatNeedRes) {
         const history = snapshot.docs.flatMap<ChatCompletionRequestMessage>((item) => {
@@ -39,7 +42,7 @@ export const useSubmitChatGpt = ({ roomId, scenario }: Props) => {
             messages: [
               {
                 role: "system",
-                content: scenario.scenes.default.systemPrompt,
+                content: scenario.scenes[currentSceneName].systemPrompt,
               },
               ...history,
               {
