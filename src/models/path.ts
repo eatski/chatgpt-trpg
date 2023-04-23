@@ -1,5 +1,4 @@
-import { z } from "zod";
-import { room, userInput, assistantResponse, scenario } from "./schema";
+import { room, scenario, interaction } from "./schema";
 import { StorePathMap } from "./util";
 
 export const storePathMap = {
@@ -7,10 +6,7 @@ export const storePathMap = {
     document: room,
     collections: {
       chat: {
-        document: z.object({
-          user: userInput,
-          assistant: z.optional(assistantResponse),
-        }),
+        document: interaction,
       },
     },
   },

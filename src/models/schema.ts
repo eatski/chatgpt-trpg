@@ -44,3 +44,8 @@ export const room = z.object({
   createdAt: z.number(),
   scenario,
 });
+
+export const interaction = z.object({
+  user: userInput,
+  assistant: z.optional(assistantResponse),
+})
