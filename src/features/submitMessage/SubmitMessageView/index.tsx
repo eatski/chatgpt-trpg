@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import styles from './styles.module.css';
+import React, { useState } from "react";
+import styles from "./styles.module.css";
 
 export type Props = {
   onSubmit: (message: string) => void;
 };
 
 export const SubmitMessageView: React.FC<Props> = ({ onSubmit: onClick }) => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
@@ -16,7 +16,7 @@ export const SubmitMessageView: React.FC<Props> = ({ onSubmit: onClick }) => {
     e.preventDefault();
     if (message.trim()) {
       onClick(message);
-      setMessage('');
+      setMessage("");
     }
   };
 

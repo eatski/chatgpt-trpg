@@ -6,47 +6,46 @@ import React, { useMemo } from "react";
 import { Message, MessageFeedView } from "./FeedView";
 
 type Props = {
-    roomId: string;
-}
+  roomId: string;
+};
 
-export const Feed: React.FC<Props> = ({roomId}) => {
-    const chatCollection = useMemo(() => query(getCollectionRef(`rooms/${roomId}/chat`),orderBy("createdAt")), [roomId]);
-    const state = useSubscribeCollection(chatCollection);
-    switch (state.status) {
-        case "success":
-            return <FeedSuccess chat={state.data.docs.map((e) => e.data())} />
-    
-        default:
-            return null;
-    }
-}
+export const Feed: React.FC<Props> = ({ roomId }) => {
+  const chatCollection = useMemo(() => query(getCollectionRef(`rooms/${roomId}/chat`), orderBy("createdAt")), [roomId]);
+  const state = useSubscribeCollection(chatCollection);
+  switch (state.status) {
+    case "success":
+      return <FeedSuccess chat={state.data.docs.map((e) => e.data())} />;
 
-const FeedSuccess: React.FC<{chat: Interaction[]}>  = ({chat}: {chat: Interaction[]}) => {
-    const messages = chat.flatMap<Message>(({assistant,user}) => {
-        const assistantMessages: Message[] = [];
-        if(assistant){
-            const responses = assistant?.responses || (assistant?.response ? [assistant.response] : []);
-            for (const res of responses) {
-                if(!res.type || res.type === "text"){
-                    assistantMessages.push({
-                        type:"assistantMessage",
-                        text: res.content
-                    })
-                }
-                
-            }
-        } else {
-            assistantMessages.push({
-                type:"loading"
-            })
+    default:
+      return null;
+  }
+};
+
+const FeedSuccess: React.FC<{ chat: Interaction[] }> = ({ chat }: { chat: Interaction[] }) => {
+  const messages = chat.flatMap<Message>(({ assistant, user }) => {
+    const assistantMessages: Message[] = [];
+    if (assistant) {
+      const responses = assistant?.responses || (assistant?.response ? [assistant.response] : []);
+      for (const res of responses) {
+        if (!res.type || res.type === "text") {
+          assistantMessages.push({
+            type: "assistantMessage",
+            text: res.content,
+          });
         }
-        return [
-            {
-                type: "yourMessage",
-                text: user.message
-            },
-            ...assistantMessages
-        ]
-    })
-    return <MessageFeedView messages={messages}  />
-}
+      }
+    } else {
+      assistantMessages.push({
+        type: "loading",
+      });
+    }
+    return [
+      {
+        type: "yourMessage",
+        text: user.message,
+      },
+      ...assistantMessages,
+    ];
+  });
+  return <MessageFeedView messages={messages} />;
+};

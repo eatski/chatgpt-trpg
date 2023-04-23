@@ -49,4 +49,4 @@ export const interaction = z.object({
   user: userInput,
   assistant: z.optional(assistantResponse),
   createdAt: z.number(),
-})
+});

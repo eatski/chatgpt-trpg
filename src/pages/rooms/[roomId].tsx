@@ -20,9 +20,7 @@ const RoomPage = ({ roomId }: Props) => {
     case "not-found":
       return <p>Error occurred.</p>;
     default:
-      return (
-        <Session roomId={roomId} scenario={room.data.scenario} />
-      );
+      return <Session roomId={roomId} scenario={room.data.scenario} />;
   }
 };
 
