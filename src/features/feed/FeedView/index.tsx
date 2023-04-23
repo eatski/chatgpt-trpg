@@ -2,11 +2,13 @@ import React from 'react';
 import styles from './styles.module.css';
 
 export type Message = {
-  user: 'system' | 'you' | 'other' | 'assistant';
+  type: 'systemMessage' | 'yourMessage' | 'otherMessage' | 'assistantMessage';
   text: string;
+} | {
+  type: 'loading';
 };
 
-export type Props = {
+type Props = {
   messages: Message[];
 };
 
@@ -14,10 +16,23 @@ export const MessageFeedView: React.FC<Props> = ({ messages }) => {
   return (
     <div className={styles.messageFeed}>
       {messages.map((message, index) => {
-        const isYou = message.user === 'you';
-        const messageClass = isYou ? styles.you : styles.other;
-        const messageContainerClass = isYou
-          ? styles.youMessageContainer
+        if (message.type === 'loading') {
+          return (
+            <div key={index} className={styles.spinnerContainer}>
+              <div className={styles.spinner}></div>
+            </div>
+          );
+        }
+
+        const isYourMessage = message.type === 'yourMessage';
+        const messageClass =
+          message.type === 'systemMessage'
+            ? styles.system
+            : isYourMessage
+            ? styles.you
+            : styles.other;
+        const messageContainerClass = isYourMessage
+          ? styles.yourMessageContainer
           : styles.otherMessageContainer;
 
         return (

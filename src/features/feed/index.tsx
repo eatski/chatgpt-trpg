@@ -23,20 +23,26 @@ export const Feed: React.FC<Props> = ({roomId}) => {
 
 const FeedSuccess: React.FC<{chat: Interaction[]}>  = ({chat}: {chat: Interaction[]}) => {
     const messages = chat.flatMap<Message>(({assistant,user}) => {
-        const responses = assistant?.responses || (assistant?.response ? [assistant.response] : []);
         const assistantMessages: Message[] = [];
-        for (const res of responses) {
-            if(!res.type || res.type === "text"){
-                assistantMessages.push({
-                    user: "assistant",
-                    text: res.content
-                })
+        if(assistant){
+            const responses = assistant?.responses || (assistant?.response ? [assistant.response] : []);
+            for (const res of responses) {
+                if(!res.type || res.type === "text"){
+                    assistantMessages.push({
+                        type:"assistantMessage",
+                        text: res.content
+                    })
+                }
+                
             }
-            
+        } else {
+            assistantMessages.push({
+                type:"loading"
+            })
         }
         return [
             {
-                user: "you",
+                type: "yourMessage",
                 text: user.message
             },
             ...assistantMessages
