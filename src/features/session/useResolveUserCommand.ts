@@ -1,8 +1,8 @@
-import { getCollectionRef } from "@/lib/firestore";
+import { getCollectionRef, store } from "@/lib/firestore";
 import { openai } from "@/lib/openapi";
 import { assistantResponse } from "@/models/schema";
 import { Scenario } from "@/models/types";
-import { onSnapshot, orderBy, query, setDoc } from "@firebase/firestore";
+import { onSnapshot, orderBy, query, runTransaction } from "@firebase/firestore";
 import { ChatCompletionRequestMessage } from "openai";
 import { useEffect, useMemo } from "react";
 
@@ -62,11 +62,17 @@ export const useResolveUserCommand = ({ roomId, scenario }: Props) => {
             }
             const parsed = JSON.parse(content);
             const parsedResponse = assistantResponse.parse(parsed);
-            setDoc(commandToResolve.ref, {
-              ...data,
-              type: "userCommand",
-              response: parsedResponse,
-            });
+            runTransaction(store, async (t) => {
+              const doc = await t.get(commandToResolve.ref);
+              if (doc.data()?.response) {
+                 return;
+              }
+              t.update(commandToResolve.ref, {
+                ...data,
+                type: "userCommand",
+                response: parsedResponse,
+              });
+            })
           });
       }
     });
