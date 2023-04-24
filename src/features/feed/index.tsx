@@ -10,7 +10,10 @@ type Props = {
 };
 
 export const Feed: React.FC<Props> = ({ roomId }) => {
-  const eventsCollection = useMemo(() => query(getCollectionRef(`rooms/${roomId}/events`), orderBy("createdAt")), [roomId]);
+  const eventsCollection = useMemo(
+    () => query(getCollectionRef(`rooms/${roomId}/events`), orderBy("createdAt")),
+    [roomId],
+  );
   const state = useSubscribeCollection(eventsCollection);
   switch (state.status) {
     case "success":

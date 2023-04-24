@@ -12,12 +12,15 @@ type Props = {
 };
 
 export const useResolveUserCommand = ({ roomId, scenario }: Props) => {
-  const chatCollection = useMemo(() =>  query(getCollectionRef(`rooms/${roomId}/events`), orderBy("createdAt")), [roomId]);
+  const chatCollection = useMemo(
+    () => query(getCollectionRef(`rooms/${roomId}/events`), orderBy("createdAt")),
+    [roomId],
+  );
   useEffect(() => {
     return onSnapshot(chatCollection, (snapshot) => {
-      const currentSceneName = snapshot.docs.reduce((acc,cur) => {
+      const currentSceneName = snapshot.docs.reduce((acc, cur) => {
         return cur.data().response?.changeScene || acc;
-      },"default")
+      }, "default");
       const commandToResolve = snapshot.docs.find((item) => !item.data().response);
       if (commandToResolve) {
         const history = snapshot.docs.flatMap<ChatCompletionRequestMessage>((item) => {

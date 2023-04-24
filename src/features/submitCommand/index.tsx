@@ -14,7 +14,7 @@ export const SubmitCommand: React.FC<Props> = ({ roomId, userId }) => {
       command,
       userId,
       createdAt: new Date().getTime(),
-      type: "userCommand"
+      type: "userCommand",
     });
   };
   return <UserInterface onSubmit={onSubmit} />;
