@@ -13,7 +13,7 @@ The 闇鍋 party is about to begin.
 
 Insert actual values in the {{variable}}.
 
-| Input choices                       | Output                                                                                                                                                                                                                                         | Output format                                                                                                                 |
+| Input                       | Output                                                                                                                                                                                                                                         | Output format                                                                                                                 |
 | :------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
 | Declare new player character's name | Announce that a new participant has been added ,his/her name. And output an unique culinary preference of that player character, which are far removed from those of an ordinary person in about 3 sentences. | {"responses":[{"content":"{{Announce}}","visibility":"public"},{"content":"{{Culinary preference}}","visibility":"private"}]} |
 | See list of participants            | Output list of participants.                                                                                                                                                                                                                   | {"response":{"content": "{{List of participants}}","visibility": "public"}}                                                   |
@@ -22,4 +22,4 @@ Insert actual values in the {{variable}}.
 
 ## First output
 
-{"responses":[{"content": "{{Provide a description of the starting scene in Japanese.}}","visibility":"public"},{"content": "{{Provide the allowed input in Japanese.}}","visibility":"public"}]}
+{"responses":[{"content": "{{Provide a description of the starting party in Japanese.}}","visibility":"public"},{"content": "{{Provide the allowed input in Japanese.}}","visibility":"public"}]}
