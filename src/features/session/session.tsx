@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Scenario } from "@/models/types";
-import { useResolveUserCommand } from "./useResolveUserCommand";
 import { Feed } from "../feed";
 import { SubmitCommand } from "../submitCommand";
+import { listenToEventsAndResolve } from "../resolveEvents";
 
 type Props = {
   roomId: string;
@@ -11,7 +11,9 @@ type Props = {
 
 const Session: React.FC<Props> = ({ roomId, scenario }) => {
   const userId = "test";
-  useResolveUserCommand({ roomId, scenario });
+  useEffect(() => {
+    return listenToEventsAndResolve(roomId,scenario)
+  },[roomId, scenario])
   return (
     <section>
       <h2>{scenario.title}</h2>
