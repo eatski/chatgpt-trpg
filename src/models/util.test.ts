@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { room, userInput, assistantResponse, scenario } from "./schema";
+import { room, event, assistantResponse, scenario } from "./schema";
 import { ExtractZodSchema, StorePathMap } from "./util";
 
 test("noop");
@@ -9,7 +9,7 @@ const storePathMap = {
     document: room,
     collections: {
       inputs: {
-        document: userInput,
+        document: event,
       },
       responses: {
         document: assistantResponse,
@@ -26,4 +26,4 @@ type MyStorePathMap = typeof storePathMap;
 type RightExtendsLeft<L, R extends L> = R extends L ? true : false;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type Test1 = RightExtendsLeft<typeof userInput, ExtractZodSchema<MyStorePathMap, "rooms/hoge/inputs">>;
+type Test1 = RightExtendsLeft<typeof event, ExtractZodSchema<MyStorePathMap, "rooms/hoge/inputs">>;

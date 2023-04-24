@@ -20,6 +20,6 @@ Insert actual values in the {{variable}}.
 | Close participation                 | Close participation.                                                                                                                                                                                                                           | {"response":{"content": "参加を締め切りました！","visibility": "public"},"changeScene":"cooking"}                             |
 | Other input                         | Output the reason why was the input rejected.                                                                                                                                                                                                  | {"response": {"content": "不正な入力です。ゲームと関係がありません。","visibility": "private"}}                               |
 
-## Output format example
+## First output
 
-{"response":{"content": "参加者はまだ誰もいません。","visibility": "public"}}
+{"responses":[{"content": "{{Provide a description of the starting scene in Japanese.}}","visibility":"public"},{"content": "{{Provide the allowed input in Japanese.}}","visibility":"public"}]}

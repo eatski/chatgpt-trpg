@@ -1,5 +1,5 @@
 import { getCollectionRef } from "@/lib/firestore";
-import { Interaction } from "@/models/types";
+import { Event } from "@/models/types";
 import { useSubscribeCollection } from "@/util/firestore-hooks";
 import { orderBy, query } from "@firebase/firestore";
 import React, { useMemo } from "react";
@@ -10,22 +10,22 @@ type Props = {
 };
 
 export const Feed: React.FC<Props> = ({ roomId }) => {
-  const chatCollection = useMemo(() => query(getCollectionRef(`rooms/${roomId}/chat`), orderBy("createdAt")), [roomId]);
-  const state = useSubscribeCollection(chatCollection);
+  const eventsCollection = useMemo(() => query(getCollectionRef(`rooms/${roomId}/events`), orderBy("createdAt")), [roomId]);
+  const state = useSubscribeCollection(eventsCollection);
   switch (state.status) {
     case "success":
-      return <FeedSuccess chat={state.data.docs.map((e) => e.data())} />;
+      return <FeedSuccess events={state.data.docs.map((e) => e.data())} />;
 
     default:
       return null;
   }
 };
 
-const FeedSuccess: React.FC<{ chat: Interaction[] }> = ({ chat }: { chat: Interaction[] }) => {
-  const messages = chat.flatMap<Message>(({ assistant, user }) => {
+const FeedSuccess: React.FC<{ events: Event[] }> = ({ events }: { events: Event[] }) => {
+  const messages = events.flatMap<Message>(({ response, command }) => {
     const assistantMessages: Message[] = [];
-    if (assistant) {
-      const responses = assistant?.responses || (assistant?.response ? [assistant.response] : []);
+    if (response) {
+      const responses = response?.responses || (response?.response ? [response.response] : []);
       for (const res of responses) {
         if (!res.type || res.type === "text") {
           assistantMessages.push({
@@ -42,7 +42,7 @@ const FeedSuccess: React.FC<{ chat: Interaction[] }> = ({ chat }: { chat: Intera
     return [
       {
         type: "yourMessage",
-        text: user.message,
+        text: command,
       },
       ...assistantMessages,
     ];

@@ -14,11 +14,6 @@ export const scenario = z
   })
   .describe("ゲームシナリオ");
 
-export const userInput = z.object({
-  userId: z.string(),
-  message: z.string(),
-});
-
 export const visibility = z.enum(["public", "private", "hidden"]);
 
 export const response = z.union([
@@ -45,8 +40,10 @@ export const room = z.object({
   scenario,
 });
 
-export const interaction = z.object({
-  user: userInput,
-  assistant: z.optional(assistantResponse),
+export const event = z.object({
+  type: z.literal("userCommand"),
+  userId: z.string(),
+  command: z.string(),
+  response: z.optional(assistantResponse),
   createdAt: z.number(),
 });

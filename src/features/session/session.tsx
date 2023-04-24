@@ -1,8 +1,8 @@
 import React from "react";
 import { Scenario } from "@/models/types";
-import { useSubmitChatGpt } from "./useSubmitChatGpt";
+import { useResolveUserCommand } from "./useResolveUserCommand";
 import { Feed } from "../feed";
-import { SubmitMessage } from "../submitMessage";
+import { SubmitCommand } from "../submitCommand";
 
 type Props = {
   roomId: string;
@@ -11,13 +11,13 @@ type Props = {
 
 const Session: React.FC<Props> = ({ roomId, scenario }) => {
   const userId = "test";
-  useSubmitChatGpt({ roomId, scenario });
+  useResolveUserCommand({ roomId, scenario });
   return (
     <section>
       <h2>{scenario.title}</h2>
       <p>{scenario.description}</p>
       <Feed roomId={roomId} />
-      <SubmitMessage userId={userId} roomId={roomId} />
+      <SubmitCommand userId={userId} roomId={roomId} />
     </section>
   );
 };

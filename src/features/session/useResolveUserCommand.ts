@@ -11,31 +11,31 @@ type Props = {
   scenario: Scenario;
 };
 
-export const useSubmitChatGpt = ({ roomId, scenario }: Props) => {
-  const chatCollection = useMemo(() =>  query(getCollectionRef(`rooms/${roomId}/chat`), orderBy("createdAt")), [roomId]);
+export const useResolveUserCommand = ({ roomId, scenario }: Props) => {
+  const chatCollection = useMemo(() =>  query(getCollectionRef(`rooms/${roomId}/events`), orderBy("createdAt")), [roomId]);
   useEffect(() => {
     return onSnapshot(chatCollection, (snapshot) => {
       const currentSceneName = snapshot.docs.reduce((acc,cur) => {
-        return cur.data().assistant?.changeScene || acc;
+        return cur.data().response?.changeScene || acc;
       },"default")
-      const chatNeedRes = snapshot.docs.find((item) => !item.data().assistant);
-      if (chatNeedRes) {
+      const commandToResolve = snapshot.docs.find((item) => !item.data().response);
+      if (commandToResolve) {
         const history = snapshot.docs.flatMap<ChatCompletionRequestMessage>((item) => {
-          const assistant = item.data().assistant;
-          return assistant
+          const response = item.data().response;
+          return response
             ? [
                 {
                   role: "user",
-                  content: item.data().user.message,
+                  content: item.data().command,
                 },
                 {
                   role: "assistant",
-                  content: JSON.stringify(assistant),
+                  content: JSON.stringify(response),
                 },
               ]
             : [];
         });
-        const chat = chatNeedRes.data();
+        const data = commandToResolve.data();
         openai
           .createChatCompletion({
             model: "gpt-3.5-turbo",
@@ -47,7 +47,7 @@ export const useSubmitChatGpt = ({ roomId, scenario }: Props) => {
               ...history,
               {
                 role: "user",
-                content: chat.user.message,
+                content: data.command,
               },
             ],
             temperature: 0.1,
@@ -58,11 +58,11 @@ export const useSubmitChatGpt = ({ roomId, scenario }: Props) => {
               throw new Error("error");
             }
             const parsed = JSON.parse(content);
-            const assistantRes = assistantResponse.parse(parsed);
-            setDoc(chatNeedRes.ref, {
-              user: chat.user,
-              assistant: assistantRes,
-              createdAt: chat.createdAt,
+            const parsedResponse = assistantResponse.parse(parsed);
+            setDoc(commandToResolve.ref, {
+              ...data,
+              type: "userCommand",
+              response: parsedResponse,
             });
           });
       }

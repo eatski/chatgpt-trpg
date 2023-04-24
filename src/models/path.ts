@@ -1,12 +1,12 @@
-import { room, scenario, interaction } from "./schema";
+import { room, scenario, event } from "./schema";
 import { StorePathMap } from "./util";
 
 export const storePathMap = {
   rooms: {
     document: room,
     collections: {
-      chat: {
-        document: interaction,
+      events: {
+        document: event,
       },
     },
   },

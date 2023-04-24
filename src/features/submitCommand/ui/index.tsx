@@ -5,18 +5,18 @@ export type Props = {
   onSubmit: (message: string) => void;
 };
 
-export const SubmitMessageView: React.FC<Props> = ({ onSubmit: onClick }) => {
-  const [message, setMessage] = useState("");
+export const UserInterface: React.FC<Props> = ({ onSubmit: onClick }) => {
+  const [input, setInput] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
+    setInput(e.target.value);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (message.trim()) {
-      onClick(message);
-      setMessage("");
+    if (input.trim()) {
+      onClick(input);
+      setInput("");
     }
   };
 
@@ -25,7 +25,7 @@ export const SubmitMessageView: React.FC<Props> = ({ onSubmit: onClick }) => {
       <input
         type="text"
         className={styles.messageInput}
-        value={message}
+        value={input}
         onChange={handleChange}
         placeholder="Type your message here..."
       />
