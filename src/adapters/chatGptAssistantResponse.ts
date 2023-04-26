@@ -1,5 +1,5 @@
 import { openai } from "@/lib/openapi";
-import { assistantResponse } from "@/models/schema";
+import { userCommandResponse } from "@/models/schema";
 import { ChatCompletionRequestMessage } from "openai";
 
 export const getChatGptAssistantResponse = async (messages: ChatCompletionRequestMessage[]) => {
@@ -13,6 +13,6 @@ export const getChatGptAssistantResponse = async (messages: ChatCompletionReques
     throw new Error("error");
   }
   const parsed = JSON.parse(content);
-  const parsedResponse = assistantResponse.parse(parsed);
+  const parsedResponse = userCommandResponse.parse(parsed);
   return parsedResponse;
 };

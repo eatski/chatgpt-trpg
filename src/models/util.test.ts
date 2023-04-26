@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { room, event, assistantResponse, scenario } from "./schema";
+import { room, event, userCommandResponse, scenario } from "./schema";
 import { ExtractZodSchema, StorePathMap } from "./util";
 
 test("noop");
@@ -12,7 +12,7 @@ const storePathMap = {
         document: event,
       },
       responses: {
-        document: assistantResponse,
+        document: userCommandResponse,
       },
     },
   },

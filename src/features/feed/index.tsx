@@ -18,37 +18,36 @@ export const Feed: React.FC<Props> = ({ roomId }) => {
   switch (state.status) {
     case "success":
       return <FeedSuccess events={state.data.docs.map((e) => e.data())} />;
-
     default:
       return null;
   }
 };
 
-const FeedSuccess: React.FC<{ events: Event[] }> = ({ events }: { events: Event[] }) => {
-  const messages = events.flatMap<Message>(({ response, command }) => {
-    const assistantMessages: Message[] = [];
-    if (response) {
-      const responses = response?.responses || (response?.response ? [response.response] : []);
+const FeedSuccess: React.FC<{ events: Event[] }> = ({ events }) => {
+  const messages = events.flatMap<Message>((data) => {
+    const messages: Message[] = [];
+    if(data.type === "userCommand") {
+      messages.push({
+        type: "yourMessage",
+        text: data.command,
+      });
+    }
+    if (data.status === "done") {
+      const responses = data.response.responses || (data.response.response ? [data.response.response] : []);
       for (const res of responses) {
         if (!res.type || res.type === "text") {
-          assistantMessages.push({
+          messages.push({
             type: "assistantMessage",
             text: res.content,
           });
         }
       }
     } else {
-      assistantMessages.push({
+      messages.push({
         type: "loading",
       });
     }
-    return [
-      {
-        type: "yourMessage",
-        text: command,
-      },
-      ...assistantMessages,
-    ];
+    return messages;
   });
   return <MessageFeedView messages={messages} />;
 };

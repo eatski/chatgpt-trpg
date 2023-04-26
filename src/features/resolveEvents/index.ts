@@ -1,11 +1,13 @@
 import { getCollectionRef } from "@/lib/firestore";
-import { Scenario, Event } from "@/models/types";
-import { onSnapshot, orderBy, query } from "@firebase/firestore";
+import { Scenario, Event, UserCommand, ChangeScene } from "@/models/types";
+import { onSnapshot, orderBy, query, QueryDocumentSnapshot } from "@firebase/firestore";
+import { resolveChangeScene } from "./changeScene";
 import { resolveUserCommand } from "./userCommand";
 
 export const listenToEventsAndResolve = (roomId: string, scenario: Scenario) => {
-  const collection = query(getCollectionRef(`rooms/${roomId}/events`), orderBy("createdAt"));
-  return onSnapshot(collection, async (snapshot) => {
+  const eventsCollectionRef = getCollectionRef(`rooms/${roomId}/events`);
+  const eventsQuery = query(eventsCollectionRef, orderBy("createdAt"));
+  return onSnapshot(eventsQuery, async (snapshot) => {
     const picked = snapshot.docs.find((item) => item.data().status === "waiting");
     if (!picked) {
       return;
@@ -16,6 +18,13 @@ export const listenToEventsAndResolve = (roomId: string, scenario: Scenario) => 
         history.push(item);
       }
     }
-    await resolveUserCommand(picked, history, scenario);
+    switch (picked.data().type) {
+      case "userCommand":
+        await resolveUserCommand(eventsCollectionRef,picked as QueryDocumentSnapshot<UserCommand>, history, scenario);
+        break;
+      case "changeScene":
+        await resolveChangeScene(picked as QueryDocumentSnapshot<ChangeScene>, scenario);
+        break;
+    }
   });
 };
