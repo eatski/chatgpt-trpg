@@ -12,8 +12,8 @@ type Props = {
 const Session: React.FC<Props> = ({ roomId, scenario }) => {
   const userId = "test";
   useEffect(() => {
-    return listenToEventsAndResolve(roomId,scenario)
-  },[roomId, scenario])
+    return listenToEventsAndResolve(roomId, scenario);
+  }, [roomId, scenario]);
   return (
     <section>
       <h2>{scenario.title}</h2>

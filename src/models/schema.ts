@@ -43,25 +43,27 @@ export const room = z.object({
 const queueStatus = z.enum(["waiting", "done"]);
 
 type Queue = {
-  type: string,
-  status: z.infer<typeof queueStatus>,
-  createdAt: number,
-}
+  type: string;
+  status: z.infer<typeof queueStatus>;
+  createdAt: number;
+};
 
-const userCommand = z.intersection(z.object({
-  type: z.literal("userCommand"),
-  userId: z.string(),
-  command: z.string(),
-  createdAt: z.number(),
-}),z.union([z.object({
-  status: z.literal("waiting"),
-}),z.object({
-  status: z.literal("done"),
-  response: assistantResponse,
-})]))
+const userCommand = z.intersection(
+  z.object({
+    type: z.literal("userCommand"),
+    userId: z.string(),
+    command: z.string(),
+    createdAt: z.number(),
+  }),
+  z.union([
+    z.object({
+      status: z.literal("waiting"),
+    }),
+    z.object({
+      status: z.literal("done"),
+      response: assistantResponse,
+    }),
+  ]),
+);
 
 export const event = userCommand satisfies Zod.Schema<Queue>;
-
-
-
-
