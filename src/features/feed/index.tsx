@@ -42,9 +42,14 @@ const FeedSuccess: React.FC<{ events: Event[] }> = ({ events }) => {
           });
         }
       }
-    } else {
+    } else if(data.status === "waiting") {
       messages.push({
         type: "loading",
+      });
+    } else {
+      messages.push({
+        type: "assistantMessage",
+        text: data.cause,
       });
     }
     return messages;

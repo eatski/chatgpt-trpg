@@ -34,7 +34,7 @@ export const room = z.object({
   scenario,
 });
 
-const queueStatus = z.enum(["waiting", "done"]);
+const queueStatus = z.enum(["waiting", "done","failed"]);
 
 type Queue = {
   type: string;
@@ -62,6 +62,10 @@ export const userCommand = z.intersection(
       status: z.literal("done"),
       response: userCommandResponse,
     }),
+    z.object({
+      status: z.literal("failed"),
+      cause: z.string(),
+    })
   ]),
 );
 

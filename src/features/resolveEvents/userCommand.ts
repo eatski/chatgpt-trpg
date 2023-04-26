@@ -48,30 +48,42 @@ export const resolveUserCommand = async (
       content: data.command,
     },
   ];
-  const response = await getChatGptJsonResponse(messages,userCommandResponse);
+  const response = await getChatGptJsonResponse(messages,userCommandResponse).catch((e) => {
+    console.error(e);
+    return null;
+  });
   await runTransaction(store, async (t) => {
     const documentData = await t.get(commandToResolve.ref);
     const data = documentData.data();
     if (!data) {
       throw new Error("data is null");
     }
-    if (data.status === "done") {
+    if (data.status !== "waiting") {
       return;
     }
-    if (response.changeScene) {
-      const newEvent = doc(collectionRef);
-      t.set(newEvent, {
-        type: "changeScene",
-        createdAt: data?.createdAt,
-        status: "waiting",
-        sceneName: response.changeScene,
-      });
+    if(response){
+        if (response.changeScene) {
+            const newEvent = doc(collectionRef);
+            t.set(newEvent, {
+              type: "changeScene",
+              createdAt: data?.createdAt,
+              status: "waiting",
+              sceneName: response.changeScene,
+            });
+          }
+          t.update(commandToResolve.ref, {
+            ...data,
+            type: "userCommand",
+            response: response,
+            status: "done",
+        });
+    } else {
+        t.update(commandToResolve.ref, {
+            ...data,
+            type: "userCommand",
+            cause: "不正な入力です。",
+            status: "failed",
+        });
     }
-    t.update(commandToResolve.ref, {
-      ...data,
-      type: "userCommand",
-      response: response,
-      status: "done",
-    });
   });
 };
