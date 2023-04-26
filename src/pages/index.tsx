@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { addDoc } from "@firebase/firestore";
+import { doc, writeBatch } from "@firebase/firestore";
 import { Scenario } from "@/models/types";
-import { getCollectionRef } from "@/lib/firestore";
+import { getCollectionRef, store } from "@/lib/firestore";
 import { GetServerSideProps } from "next";
 import { readFile } from "fs/promises";
 import { resolve } from "path";
@@ -58,10 +58,21 @@ const CreateRoom = ({ scenarios }: Props) => {
         throw new Error("Scenario not found");
       }
       const roomsCollection = getCollectionRef("rooms");
-      const roomRef = await addDoc(roomsCollection, {
-        createdAt: new Date().getTime(),
+      const batch = writeBatch(store);
+      const roomRef = doc(roomsCollection);
+      const now = new Date().getTime();
+      batch.set(roomRef, {
+        createdAt: now,
         scenario: scenario.data,
-      });
+      })
+      const eventRef = getCollectionRef(`rooms/${roomRef.id}/events`);
+      batch.set(doc(eventRef), {
+        type: "changeScene",
+        createdAt: now,
+        status: "waiting",
+        sceneName: "default"
+      })
+      await batch.commit();
       router.push(`/rooms/${roomRef.id}`); // ルームページにリダイレクトする
     } catch (error) {
       setStatus("error"); // エラーが発生したら、エラーメッセージを表示する
