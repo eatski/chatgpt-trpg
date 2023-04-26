@@ -15,6 +15,7 @@ export const SubmitCommand: React.FC<Props> = ({ roomId, userId }) => {
       userId,
       createdAt: new Date().getTime(),
       type: "userCommand",
+      status: "waiting"
     });
   };
   return <UserInterface onSubmit={onSubmit} />;
