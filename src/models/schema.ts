@@ -48,7 +48,7 @@ type Queue = {
   createdAt: number;
 };
 
-const userCommand = z.intersection(
+export const userCommand = z.intersection(
   z.object({
     type: z.literal("userCommand"),
     userId: z.string(),
