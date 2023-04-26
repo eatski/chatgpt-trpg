@@ -29,8 +29,6 @@ export const response = z.union([
   }),
 ]);
 
-
-
 export const room = z.object({
   createdAt: z.number(),
   scenario,
@@ -70,21 +68,23 @@ export const userCommand = z.intersection(
 export const changeSceneResponse = z.object({
   response: z.optional(response),
   responses: z.optional(z.array(response)),
-})
+});
 
 export const changeScene = z.intersection(
   z.object({
-  type: z.literal("changeScene"),
-  sceneName: z.string(),
-  createdAt: z.number(),
-}),z.union([
-  z.object({
-    status: z.literal("waiting"),
+    type: z.literal("changeScene"),
+    sceneName: z.string(),
+    createdAt: z.number(),
   }),
-  z.object({
-    status: z.literal("done"),
-    response: changeSceneResponse,
-  }),
-]),)
+  z.union([
+    z.object({
+      status: z.literal("waiting"),
+    }),
+    z.object({
+      status: z.literal("done"),
+      response: changeSceneResponse,
+    }),
+  ]),
+);
 
-export const event = z.union([userCommand,changeScene]) satisfies Zod.Schema<Queue>;
+export const event = z.union([userCommand, changeScene]) satisfies Zod.Schema<Queue>;

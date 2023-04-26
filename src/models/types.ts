@@ -1,6 +1,16 @@
 // type.ts
 import { z } from "zod";
-import { scene, scenario, userCommandResponse, room, visibility, response, event, userCommand, changeScene } from "./schema";
+import {
+  scene,
+  scenario,
+  userCommandResponse,
+  room,
+  visibility,
+  response,
+  event,
+  userCommand,
+  changeScene,
+} from "./schema";
 
 export type Scene = z.infer<typeof scene>;
 export type Scenario = z.infer<typeof scenario>;

@@ -20,7 +20,7 @@ export const listenToEventsAndResolve = (roomId: string, scenario: Scenario) => 
     }
     switch (picked.data().type) {
       case "userCommand":
-        await resolveUserCommand(eventsCollectionRef,picked as QueryDocumentSnapshot<UserCommand>, history, scenario);
+        await resolveUserCommand(eventsCollectionRef, picked as QueryDocumentSnapshot<UserCommand>, history, scenario);
         break;
       case "changeScene":
         await resolveChangeScene(picked as QueryDocumentSnapshot<ChangeScene>, scenario);

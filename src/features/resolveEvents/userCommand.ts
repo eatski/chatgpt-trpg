@@ -12,29 +12,29 @@ export const resolveUserCommand = async (
 ) => {
   const historyToPrompt = history.flatMap<ChatCompletionRequestMessage>((data) => {
     switch (data.type) {
-        case "userCommand":
-            return [
-                {
-                role: "user",
-                content: data.command,
-                },
-                {
-                role: "assistant",
-                content: JSON.stringify(data.response),
-                },
-          ];
-        case "changeScene":
-            return [
-                {
-                    role: "assistant",
-                    content: JSON.stringify(data.response),
-                },
-            ]
+      case "userCommand":
+        return [
+          {
+            role: "user",
+            content: data.command,
+          },
+          {
+            role: "assistant",
+            content: JSON.stringify(data.response),
+          },
+        ];
+      case "changeScene":
+        return [
+          {
+            role: "assistant",
+            content: JSON.stringify(data.response),
+          },
+        ];
     }
   });
   const data = commandToResolve.data();
   const currentSceneName = history.reduce((acc, cur) => {
-    return cur.type === "changeScene" && cur.sceneName || acc;
+    return (cur.type === "changeScene" && cur.sceneName) || acc;
   }, "default");
   const messages: ChatCompletionRequestMessage[] = [
     {
@@ -51,20 +51,20 @@ export const resolveUserCommand = async (
   await runTransaction(store, async (t) => {
     const documentData = await t.get(commandToResolve.ref);
     const data = documentData.data();
-    if(!data){
-        throw new Error("data is null");
+    if (!data) {
+      throw new Error("data is null");
     }
     if (data.status === "done") {
       return;
     }
-    if(assistantResponse.changeScene){
-        const newEvent = doc(collectionRef);
-        t.set(newEvent, {
-            type: "changeScene",
-            createdAt: data?.createdAt,
-            status: "waiting",
-            sceneName: assistantResponse.changeScene,
-        });
+    if (assistantResponse.changeScene) {
+      const newEvent = doc(collectionRef);
+      t.set(newEvent, {
+        type: "changeScene",
+        createdAt: data?.createdAt,
+        status: "waiting",
+        sceneName: assistantResponse.changeScene,
+      });
     }
     t.update(commandToResolve.ref, {
       ...data,

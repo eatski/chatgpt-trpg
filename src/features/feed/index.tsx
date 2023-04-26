@@ -26,7 +26,7 @@ export const Feed: React.FC<Props> = ({ roomId }) => {
 const FeedSuccess: React.FC<{ events: Event[] }> = ({ events }) => {
   const messages = events.flatMap<Message>((data) => {
     const messages: Message[] = [];
-    if(data.type === "userCommand") {
+    if (data.type === "userCommand") {
       messages.push({
         type: "yourMessage",
         text: data.command,
