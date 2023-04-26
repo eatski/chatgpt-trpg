@@ -1,6 +1,6 @@
 import { getChatGptAssistantResponse } from "@/adapters/chatGptAssistantResponse";
 import { getCollectionRef, store } from "@/lib/firestore";
-import { Scenario } from "@/models/types";
+import { Scenario,Event } from "@/models/types";
 import { onSnapshot, orderBy, query, runTransaction } from "@firebase/firestore";
 import { ChatCompletionRequestMessage } from "openai";
 
@@ -11,33 +11,35 @@ export const listenToEventsAndResolve = (roomId: string, scenario: Scenario) => 
     if (!picked) {
       return;
     }
+    const history: (Event & {status: "done"})[] = [];
+    for (const item of snapshot.docs.map(e => e.data())) {
+      if (item.status === "done") {
+        history.push(item);
+      }
+    }
     const commandToResolve = picked;
-    const history = snapshot.docs.flatMap<ChatCompletionRequestMessage>((item) => {
-      const data = item.data();
-      return data.status === "done"
-        ? [
-            {
-              role: "user",
-              content: item.data().command,
-            },
-            {
-              role: "assistant",
-              content: JSON.stringify(data.response),
-            },
-          ]
-        : [];
+    const historyToPrompt = history.flatMap<ChatCompletionRequestMessage>((data) => {
+      return [
+        {
+          role: "user",
+          content: data.command,
+        },
+        {
+          role: "assistant",
+          content: JSON.stringify(data.response),
+        },
+      ]
     });
     const data = commandToResolve.data();
-    const currentSceneName = snapshot.docs.reduce((acc, cur) => {
-      const data = cur.data();
-      return (data.status === "done" && data.response?.changeScene) || acc;
+    const currentSceneName = history.reduce((acc, cur) => {
+      return cur.response.changeScene || acc;
     }, "default");
     const messages: ChatCompletionRequestMessage[] = [
       {
         role: "system",
         content: scenario.scenes[currentSceneName].systemPrompt,
       },
-      ...history,
+      ...historyToPrompt,
       {
         role: "user",
         content: data.command,
