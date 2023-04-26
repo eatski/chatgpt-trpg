@@ -1,5 +1,6 @@
-import { getChatGptAssistantResponse } from "@/adapters/chatGptAssistantResponse";
+import { getChatGptJsonResponse } from "@/adapters/chatGptAssistantResponse";
 import { store } from "@/lib/firestore";
+import { changeSceneResponse } from "@/models/schema";
 import { Scenario, ChangeScene } from "@/models/types";
 import { QueryDocumentSnapshot, runTransaction } from "@firebase/firestore";
 import { ChatCompletionRequestMessage } from "openai";
@@ -12,7 +13,7 @@ export const resolveChangeScene = async (commandToResolve: QueryDocumentSnapshot
       content: scenario.scenes[data.sceneName].systemPrompt,
     },
   ];
-  const assistantResponse = await getChatGptAssistantResponse(messages);
+  const response = await getChatGptJsonResponse(messages,changeSceneResponse);
   await runTransaction(store, async (t) => {
     const documentData = await t.get(commandToResolve.ref);
     const data = documentData.data();
@@ -25,7 +26,7 @@ export const resolveChangeScene = async (commandToResolve: QueryDocumentSnapshot
     t.update(commandToResolve.ref, {
       ...data,
       type: "changeScene",
-      response: assistantResponse,
+      response,
       status: "done",
     });
   });

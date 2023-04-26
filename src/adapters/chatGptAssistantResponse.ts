@@ -1,8 +1,8 @@
 import { openai } from "@/lib/openapi";
-import { userCommandResponse } from "@/models/schema";
 import { ChatCompletionRequestMessage } from "openai";
+import { ZodSchema } from "zod";
 
-export const getChatGptAssistantResponse = async (messages: ChatCompletionRequestMessage[]) => {
+export const getChatGptJsonResponse = async <T>(messages: ChatCompletionRequestMessage[],schema: ZodSchema<T>) => {
   const res = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages,
@@ -13,6 +13,6 @@ export const getChatGptAssistantResponse = async (messages: ChatCompletionReques
     throw new Error("error");
   }
   const parsed = JSON.parse(content);
-  const parsedResponse = userCommandResponse.parse(parsed);
+  const parsedResponse = schema.parse(parsed);
   return parsedResponse;
 };

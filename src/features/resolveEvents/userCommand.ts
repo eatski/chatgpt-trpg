@@ -1,5 +1,6 @@
-import { getChatGptAssistantResponse } from "@/adapters/chatGptAssistantResponse";
+import { getChatGptJsonResponse } from "@/adapters/chatGptAssistantResponse";
 import { store } from "@/lib/firestore";
+import { userCommandResponse } from "@/models/schema";
 import { UserCommand, Event, Scenario, EventDone } from "@/models/types";
 import { CollectionReference, doc, QueryDocumentSnapshot, runTransaction } from "@firebase/firestore";
 import { ChatCompletionRequestMessage } from "openai";
@@ -47,7 +48,7 @@ export const resolveUserCommand = async (
       content: data.command,
     },
   ];
-  const assistantResponse = await getChatGptAssistantResponse(messages);
+  const response = await getChatGptJsonResponse(messages,userCommandResponse);
   await runTransaction(store, async (t) => {
     const documentData = await t.get(commandToResolve.ref);
     const data = documentData.data();
@@ -57,19 +58,19 @@ export const resolveUserCommand = async (
     if (data.status === "done") {
       return;
     }
-    if (assistantResponse.changeScene) {
+    if (response.changeScene) {
       const newEvent = doc(collectionRef);
       t.set(newEvent, {
         type: "changeScene",
         createdAt: data?.createdAt,
         status: "waiting",
-        sceneName: assistantResponse.changeScene,
+        sceneName: response.changeScene,
       });
     }
     t.update(commandToResolve.ref, {
       ...data,
       type: "userCommand",
-      response: assistantResponse,
+      response: response,
       status: "done",
     });
   });
