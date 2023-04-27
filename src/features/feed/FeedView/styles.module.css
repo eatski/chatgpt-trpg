@@ -1,62 +1,60 @@
 .messageFeed {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+}
+
+.yourMessageContainer,
+.otherMessageContainer {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.yourMessageContainer {
+  justify-content: flex-end;
+}
+
+.you,
+.other {
+  max-width: 70%;
+  padding: 8px 16px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.you {
+  background-color: #4e9cff;
+  color: #ffffff;
+}
+
+.other {
+  background-color: #eeeeee;
+  color: #333333;
+}
+
+.messageText {
+  margin: 0;
+  word-wrap: break-word;
+}
+
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #4e9cff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
   }
-  
-  .yourMessageContainer,
-  .otherMessageContainer {
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-  }
-  
-  .yourMessageContainer {
-    justify-content: flex-end;
-  }
-  
-  .you,
-  .other {
-    max-width: 70%;
-    padding: 8px 16px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-  }
-  
-  .you {
-    background-color: #4e9cff;
-    color: #ffffff;
-  }
-  
-  .other {
-    background-color: #eeeeee;
-    color: #333333;
-  }
-  
-  .messageText {
-    margin: 0;
-    word-wrap: break-word;
-  }
-  
-  .spinnerContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 8px 0;
-  }
-  
-  .spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    border-left-color: #4e9cff;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    animation: spin 1s linear infinite;
-  }
-  
-  @keyframes spin {
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-  
-  
+}
