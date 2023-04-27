@@ -7,7 +7,7 @@ import {
   room,
   visibility,
   response,
-  event,
+  sessionEvent,
   userCommand,
   changeScene,
 } from "./schema";
@@ -18,7 +18,7 @@ export type AssistantResponse = z.infer<typeof userCommandResponse>;
 export type Response = z.infer<typeof response>;
 export type Room = z.infer<typeof room>;
 export type Visibility = z.infer<typeof visibility>;
-export type Event = z.infer<typeof event>;
-export type EventDone = Event & { status: "done" };
+export type SessionEvent = z.infer<typeof sessionEvent>;
+export type SessionEventDone = SessionEvent & { status: "done" };
 export type UserCommand = z.infer<typeof userCommand>;
 export type ChangeScene = z.infer<typeof changeScene>;

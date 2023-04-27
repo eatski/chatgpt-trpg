@@ -1,4 +1,4 @@
-import { room, scenario, event } from "./schema";
+import { room, scenario, sessionEvent } from "./schema";
 import { StorePathMap } from "./util";
 
 export const storePathMap = {
@@ -6,7 +6,7 @@ export const storePathMap = {
     document: room,
     collections: {
       events: {
-        document: event,
+        document: sessionEvent,
       },
     },
   },

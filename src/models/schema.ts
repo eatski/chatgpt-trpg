@@ -91,4 +91,4 @@ export const changeScene = z.intersection(
   ]),
 );
 
-export const event = z.union([userCommand, changeScene]) satisfies Zod.Schema<Queue>;
+export const sessionEvent = z.union([userCommand, changeScene]) satisfies Zod.Schema<Queue>;

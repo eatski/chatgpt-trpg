@@ -1,5 +1,5 @@
 import { getCollectionRef } from "@/lib/firestore";
-import { Event } from "@/models/types";
+import { SessionEvent } from "@/models/types";
 import { useSubscribeCollection } from "@/util/firestore-hooks";
 import { orderBy, query } from "@firebase/firestore";
 import React, { useMemo } from "react";
@@ -23,7 +23,7 @@ export const Feed: React.FC<Props> = ({ roomId }) => {
   }
 };
 
-const FeedSuccess: React.FC<{ events: Event[] }> = ({ events }) => {
+const FeedSuccess: React.FC<{ events: SessionEvent[] }> = ({ events }) => {
   const messages = events.flatMap<Message>((data) => {
     const messages: Message[] = [];
     if (data.type === "userCommand") {

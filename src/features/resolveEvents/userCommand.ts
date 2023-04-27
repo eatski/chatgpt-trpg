@@ -1,14 +1,14 @@
 import { getChatGptJsonResponse } from "@/adapters/chatGptAssistantResponse";
 import { store } from "@/lib/firestore";
 import { userCommandResponse } from "@/models/schema";
-import { UserCommand, Event, Scenario, EventDone } from "@/models/types";
+import { UserCommand, SessionEvent, Scenario, SessionEventDone } from "@/models/types";
 import { CollectionReference, doc, QueryDocumentSnapshot, runTransaction } from "@firebase/firestore";
 import { ChatCompletionRequestMessage } from "openai";
 
 export const resolveUserCommand = async (
-  collectionRef: CollectionReference<Event>,
+  collectionRef: CollectionReference<SessionEvent>,
   commandToResolve: QueryDocumentSnapshot<UserCommand>,
-  history: EventDone[],
+  history: SessionEventDone[],
   scenario: Scenario,
 ) => {
   const historyToPrompt = history.flatMap<ChatCompletionRequestMessage>((data) => {

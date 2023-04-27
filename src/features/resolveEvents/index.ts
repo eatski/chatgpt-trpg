@@ -1,5 +1,5 @@
 import { getCollectionRef } from "@/lib/firestore";
-import { Scenario, Event, UserCommand, ChangeScene } from "@/models/types";
+import { Scenario, UserCommand, ChangeScene, SessionEventDone } from "@/models/types";
 import { onSnapshot, orderBy, query, QueryDocumentSnapshot } from "@firebase/firestore";
 import { resolveChangeScene } from "./changeScene";
 import { resolveUserCommand } from "./userCommand";
@@ -12,7 +12,7 @@ export const listenToEventsAndResolve = (roomId: string, scenario: Scenario) => 
     if (!picked) {
       return;
     }
-    const history: (Event & { status: "done" })[] = [];
+    const history: SessionEventDone[] = [];
     for (const item of snapshot.docs.map((e) => e.data())) {
       if (item.status === "done") {
         history.push(item);
