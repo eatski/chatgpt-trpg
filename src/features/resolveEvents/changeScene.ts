@@ -1,4 +1,4 @@
-import { getChatGptJsonResponse } from "@/adapters/chatGptAssistantResponse";
+import { getChatGptJsonResponse } from "@/util/chatGptAssistantResponse";
 import { store } from "@/lib/firestore";
 import { changeSceneResponse } from "@/models/schema";
 import { Scenario, ChangeScene } from "@/models/types";
