@@ -37,10 +37,14 @@ export const resolveUserCommand = async (
   const currentSceneName = history.reduce((acc, cur) => {
     return (cur.type === "changeScene" && cur.sceneName) || acc;
   }, "default");
+  const scene = scenario.scenes[currentSceneName];
+    if (!scene) {
+        throw new Error(`scene [${currentSceneName}] not found`);
+    }
   const messages: ChatCompletionRequestMessage[] = [
     {
       role: "system",
-      content: scenario.scenes[currentSceneName].systemPrompt,
+      content: scene.systemPrompt,
     },
     ...historyToPrompt,
     {

@@ -88,6 +88,10 @@ export const changeScene = z.intersection(
       status: z.literal("done"),
       response: changeSceneResponse,
     }),
+    z.object({
+      status: z.literal("failed"),
+      cause: z.string(),
+    })
   ]),
 );
 

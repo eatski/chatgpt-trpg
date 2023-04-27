@@ -9,7 +9,7 @@ export const getChatGptJsonResponse = async <T>(messages: ChatCompletionRequestM
     temperature: 0.3,
     frequency_penalty: 0.4
   });
-  const content = res.data.choices[0].message?.content;
+  const content = res.data.choices[0]?.message?.content;
   if (!content) {
     throw new Error("error");
   }
