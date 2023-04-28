@@ -52,11 +52,8 @@ export const getChatGptJsonLStream = async <T>(messages: ChatCompletionRequestMe
               return;
             }
             const original = new TextDecoder().decode(value);
-            console.log("original",original)
-            const jsonStr = parseChunkFormatString(original);
-            console.log("jsonStr",jsonStr)
-            const json = jsonStr;
-            json.forEach((json) => {
+            const jsonarray = parseChunkFormatString(original);
+            jsonarray.forEach((json) => {
                 const content = json.choices[0]?.delta?.content;
                 if(content){
                     text += content
