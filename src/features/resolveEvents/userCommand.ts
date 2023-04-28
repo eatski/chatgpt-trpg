@@ -1,8 +1,9 @@
+/* eslint-disable no-case-declarations */
 import { getChatGptJsonLStream } from "@/util/getChatGptJsonLStream";
 import { store } from "@/lib/firestore";
 import { jsonlItem } from "@/models/schema";
 import { UserCommand, SessionEvent, Scenario, SessionEventDone } from "@/models/types";
-import { CollectionReference, QueryDocumentSnapshot, runTransaction } from "@firebase/firestore";
+import { CollectionReference, doc, QueryDocumentSnapshot, runTransaction } from "@firebase/firestore";
 import { ChatCompletionRequestMessage } from "openai";
 
 export const resolveUserCommand = async (
@@ -91,23 +92,48 @@ export const resolveUserCommand = async (
           return;
         }
         const newResponses = [...data.response.responses]
-        if(!value.parsed.type || value.parsed.type === "message"){
+        switch (value.parsed.type) {
+          case "message":
+          case undefined:
             newResponses.push({
-                type: "text",
-                content: value.parsed.content,
-                visibility: value.parsed.visibility || "public"
+              type: "text",
+              content: value.parsed.content,
+              visibility: value.parsed.visibility || "public"
             })
+            break;
+          case "command":
+            const newEventRef = doc(collectionRef); 
+            t.set(newEventRef, {
+              type: "changeScene",
+              createdAt: data.createdAt + 1, 
+              status: "waiting",
+              sceneName: value.parsed.sceneName,
+            })
+            break;
+          default:
+            break;
         }
-        //TODO: change scene
         await t.update(commandToResolve.ref, {
             ...data,
             response: {
-                original: data.response.original + "\n" + value.original,
-                responses: newResponses
+              original: data.response.original + "\n" + value.original,
+              responses: newResponses,
             }
         });
+
     })
     await recursive();
   }
-  recursive();
+  await recursive();
+  await runTransaction(store, async (t) => {
+    const documentData = await t.get(commandToResolve.ref);
+    const data = documentData.data();
+    if (!data) {
+      throw new Error("data is null");
+    }
+    t.update(commandToResolve.ref, {
+        ...data,
+        status: "done"
+    });
+  })
 };

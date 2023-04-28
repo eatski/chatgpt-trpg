@@ -63,7 +63,7 @@ Close participation.
 | Output format |
 
 {"content":"参加を締め切りました！","visibility":"public"}
-{"type":"command","value":"changeScene"}
+{"type":"command","command":"changeScene","sceneName":"battle"}
 
 ======
 

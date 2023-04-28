@@ -15,7 +15,7 @@ import {
 
 export type Scene = z.infer<typeof scene>;
 export type Scenario = z.infer<typeof scenario>;
-export type AssistantResponse = z.infer<typeof userCommandResponse>;
+export type UserCommandResponse = z.infer<typeof userCommandResponse>;
 export type Response = z.infer<typeof response>;
 export type Room = z.infer<typeof room>;
 export type Visibility = z.infer<typeof visibility>;

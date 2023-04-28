@@ -42,6 +42,11 @@ const FeedSuccess: React.FC<{ events: SessionEvent[] }> = ({ events }) => {
           });
         }
       }
+      if(data.status === "processing"){
+        messages.push({
+          type: "loading",
+        });
+      }
     } else if(data.status === "waiting") {
       messages.push({
         type: "loading",

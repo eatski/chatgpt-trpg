@@ -64,8 +64,7 @@ export const resolveChangeScene = async (commandToResolve: QueryDocumentSnapshot
                 visibility: value.parsed.visibility || "public"
             })
         }
-        //TODO: change scene
-        t.update(commandToResolve.ref, {
+        await t.update(commandToResolve.ref, {
             ...data,
             response: {
                 original: data.response.original + "\n" + value.original,
@@ -75,5 +74,16 @@ export const resolveChangeScene = async (commandToResolve: QueryDocumentSnapshot
     })
     await recursive();
   }
-  recursive();
+  await recursive();
+  await runTransaction(store, async (t) => {
+    const documentData = await t.get(commandToResolve.ref);
+    const data = documentData.data();
+    if (!data) {
+      throw new Error("data is null");
+    }
+    t.update(commandToResolve.ref, {
+        ...data,
+        status: "done"
+    });
+  })
 };

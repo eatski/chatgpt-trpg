@@ -46,6 +46,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
             description: "JSONL sample",
             scenes: {
               default: await getScene("jsonl-sample","default"),
+              battle: await getScene("jsonl-sample","battle"),
             },
           },
         },

@@ -48,6 +48,9 @@ export const getChatGptJsonLStream = async <T>(messages: ChatCompletionRequestMe
         function push() {
           reader.read().then(({ done, value }) => {
             if (done) {
+              if(text){
+                console.error("An unparsed string.",text)
+              }
               controller.close();
               return;
             }
@@ -60,7 +63,7 @@ export const getChatGptJsonLStream = async <T>(messages: ChatCompletionRequestMe
                     try {
                         const parsed = JSON.parse(text);
                         const typed = schema.parse(parsed);
-                        
+                        console.log("json",parsed);
                         controller.enqueue({
                             parsed: typed,
                             original: text

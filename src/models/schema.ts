@@ -38,7 +38,6 @@ type Queue = z.infer<typeof queue>;
 export const userCommandResponse = z.object({
   original: z.string(),
   responses: z.array(response),
-  changeScene: z.optional(z.string()),
 });
 
 export const userCommand = z.intersection(
