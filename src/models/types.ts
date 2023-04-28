@@ -10,6 +10,7 @@ import {
   sessionEvent,
   userCommand,
   changeScene,
+  jsonlItem,
 } from "./schema";
 
 export type Scene = z.infer<typeof scene>;
@@ -22,3 +23,4 @@ export type SessionEvent = z.infer<typeof sessionEvent>;
 export type SessionEventDone = SessionEvent & { status: "done" };
 export type UserCommand = z.infer<typeof userCommand>;
 export type ChangeScene = z.infer<typeof changeScene>;
+export type JsonlItem = z.infer<typeof jsonlItem>;
