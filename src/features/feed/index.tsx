@@ -32,8 +32,8 @@ const FeedSuccess: React.FC<{ events: SessionEvent[] }> = ({ events }) => {
         text: data.command,
       });
     }
-    if (data.status === "done") {
-      const responses = data.response.responses || (data.response.response ? [data.response.response] : []);
+    if (data.status === "done" || data.status === "processing") {
+      const responses = data.response.responses;
       for (const res of responses) {
         if (!res.type || res.type === "text") {
           messages.push({
@@ -42,7 +42,12 @@ const FeedSuccess: React.FC<{ events: SessionEvent[] }> = ({ events }) => {
           });
         }
       }
-    } else if(data.status === "waiting") {
+      if (data.status === "processing") {
+        messages.push({
+          type: "loading",
+        });
+      }
+    } else if (data.status === "waiting") {
       messages.push({
         type: "loading",
       });

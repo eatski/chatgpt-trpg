@@ -15,10 +15,10 @@ type Props = {
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
-  const getScene = async (name: string) => {
+  const getScene = async (directory: string, name: string) => {
     return {
       systemPrompt: (
-        await readFile(resolve(process.cwd(), "mocks", "scenarios", "yaminabe", `${name}.md`), "utf-8")
+        await readFile(resolve(process.cwd(), "mocks", "scenarios", directory, `${name}.md`), "utf-8")
       ).toString(),
     };
   };
@@ -26,16 +26,27 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
   return {
     props: {
       scenarios: [
+        // {
+        //   id: "yaminabe",
+        //   data: {
+        //     title: "闇鍋",
+        //     description: "闇鍋をするよ",
+        //     scenes: {
+        //       default: await getScene("yaminabe","default"),
+        //       cooking: await getScene("yaminabe","cooking"),
+        //       select: await getScene("yaminabe","select"),
+        //       ending: await getScene("yaminabe","ending"),
+        //     },
+        //   },
+        // },
         {
-          id: "yaminabe",
+          id: "jsonl-sample",
           data: {
-            title: "闇鍋",
-            description: "闇鍋をするよ",
+            title: "JSONL sample",
+            description: "JSONL sample",
             scenes: {
-              default: await getScene("default"),
-              cooking: await getScene("cooking"),
-              select: await getScene("select"),
-              ending: await getScene("ending"),
+              default: await getScene("jsonl-sample", "default"),
+              battle: await getScene("jsonl-sample", "battle"),
             },
           },
         },
@@ -64,14 +75,14 @@ const CreateRoom = ({ scenarios }: Props) => {
       batch.set(roomRef, {
         createdAt: now,
         scenario: scenario.data,
-      })
+      });
       const eventRef = getCollectionRef(`rooms/${roomRef.id}/events`);
       batch.set(doc(eventRef), {
         type: "changeScene",
         createdAt: now,
         status: "waiting",
-        sceneName: "default"
-      })
+        sceneName: "default",
+      });
       await batch.commit();
       router.push(`/rooms/${roomRef.id}`); // ルームページにリダイレクトする
     } catch (error) {

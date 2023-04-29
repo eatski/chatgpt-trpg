@@ -16,35 +16,28 @@ export const scenario = z
 
 export const visibility = z.enum(["public", "private", "hidden"]);
 
-export const response = z.union([
-  z.object({
-    type: z.optional(z.literal("text")),
-    content: z.string(),
-    visibility,
-  }),
-  z.object({
-    type: z.literal("image"),
-    promptToGenerate: z.string(),
-    visibility,
-  }),
-]);
+export const response = z.object({
+  type: z.optional(z.literal("text")),
+  content: z.string(),
+  visibility,
+});
 
 export const room = z.object({
   createdAt: z.number(),
   scenario,
 });
 
-const queueStatus = z.enum(["waiting", "done","failed"]);
+const queue = z.object({
+  type: z.string(),
+  createdAt: z.number(),
+  status: z.enum(["waiting", "done", "failed", "processing"]),
+});
 
-type Queue = {
-  type: string;
-  status: z.infer<typeof queueStatus>;
-  createdAt: number;
-};
+type Queue = z.infer<typeof queue>;
+
 export const userCommandResponse = z.object({
-  response: z.optional(response),
-  responses: z.optional(z.array(response)),
-  changeScene: z.optional(z.string()),
+  original: z.string(),
+  responses: z.array(response),
 });
 
 export const userCommand = z.intersection(
@@ -65,13 +58,17 @@ export const userCommand = z.intersection(
     z.object({
       status: z.literal("failed"),
       cause: z.string(),
-    })
+    }),
+    z.object({
+      status: z.literal("processing"),
+      response: userCommandResponse,
+    }),
   ]),
 );
 
 export const changeSceneResponse = z.object({
-  response: z.optional(response),
-  responses: z.optional(z.array(response)),
+  original: z.string(),
+  responses: z.array(response),
 });
 
 export const changeScene = z.intersection(
@@ -91,8 +88,25 @@ export const changeScene = z.intersection(
     z.object({
       status: z.literal("failed"),
       cause: z.string(),
-    })
+    }),
+    z.object({
+      status: z.literal("processing"),
+      response: changeSceneResponse,
+    }),
   ]),
 );
 
 export const sessionEvent = z.union([userCommand, changeScene]) satisfies Zod.Schema<Queue>;
+
+export const jsonlItem = z.union([
+  z.object({
+    type: z.optional(z.literal("message")),
+    content: z.string(),
+    visibility: z.optional(visibility),
+  }),
+  z.object({
+    type: z.literal("command"),
+    command: z.literal("changeScene"),
+    sceneName: z.string(),
+  }),
+]);

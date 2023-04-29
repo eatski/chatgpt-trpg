@@ -1,6 +1,7 @@
-import { getChatGptJsonResponse } from "@/adapters/chatGptAssistantResponse";
+/* eslint-disable no-case-declarations */
+import { getChatGptJsonLStream } from "@/util/getChatGptJsonLStream";
 import { store } from "@/lib/firestore";
-import { userCommandResponse } from "@/models/schema";
+import { jsonlItem } from "@/models/schema";
 import { UserCommand, SessionEvent, Scenario, SessionEventDone } from "@/models/types";
 import { CollectionReference, doc, QueryDocumentSnapshot, runTransaction } from "@firebase/firestore";
 import { ChatCompletionRequestMessage } from "openai";
@@ -21,14 +22,14 @@ export const resolveUserCommand = async (
           },
           {
             role: "assistant",
-            content: JSON.stringify(data.response),
+            content: data.response.original,
           },
         ];
       case "changeScene":
         return [
           {
             role: "assistant",
-            content: JSON.stringify(data.response),
+            content: data.response.original,
           },
         ];
     }
@@ -38,9 +39,9 @@ export const resolveUserCommand = async (
     return (cur.type === "changeScene" && cur.sceneName) || acc;
   }, "default");
   const scene = scenario.scenes[currentSceneName];
-    if (!scene) {
-        throw new Error(`scene [${currentSceneName}] not found`);
-    }
+  if (!scene) {
+    throw new Error(`scene [${currentSceneName}] not found`);
+  }
   const messages: ChatCompletionRequestMessage[] = [
     {
       role: "system",
@@ -52,42 +53,86 @@ export const resolveUserCommand = async (
       content: data.command,
     },
   ];
-  const response = await getChatGptJsonResponse(messages,userCommandResponse).catch((e) => {
-    console.error(e);
-    return null;
-  });
-  await runTransaction(store, async (t) => {
+  const stream = await getChatGptJsonLStream(messages, jsonlItem);
+  const processing = await runTransaction(store, async (t) => {
     const documentData = await t.get(commandToResolve.ref);
     const data = documentData.data();
     if (!data) {
       throw new Error("data is null");
     }
     if (data.status !== "waiting") {
+      return false;
+    }
+    await t.update(commandToResolve.ref, {
+      ...data,
+      status: "processing",
+      response: {
+        original: "",
+        responses: [],
+      },
+    });
+    return true;
+  });
+  if (!processing) {
+    return;
+  }
+  const reader = stream.getReader();
+  const recursive = async () => {
+    const { done, value } = await reader.read();
+    if (done) {
       return;
     }
-    if(response){
-        if (response.changeScene) {
-            const newEvent = doc(collectionRef);
-            t.set(newEvent, {
-              type: "changeScene",
-              createdAt: data?.createdAt,
-              status: "waiting",
-              sceneName: response.changeScene,
-            });
-          }
-          t.update(commandToResolve.ref, {
-            ...data,
-            type: "userCommand",
-            response: response,
-            status: "done",
-        });
-    } else {
-        t.update(commandToResolve.ref, {
-            ...data,
-            type: "userCommand",
-            cause: "不正な入力です。",
-            status: "failed",
-        });
+    await runTransaction(store, async (t) => {
+      const documentData = await t.get(commandToResolve.ref);
+      const data = documentData.data();
+      if (!data) {
+        throw new Error("data is null");
+      }
+      if (data.status !== "processing") {
+        return;
+      }
+      const newResponses = [...data.response.responses];
+      switch (value.parsed.type) {
+        case "message":
+        case undefined:
+          newResponses.push({
+            type: "text",
+            content: value.parsed.content,
+            visibility: value.parsed.visibility || "public",
+          });
+          break;
+        case "command":
+          const newEventRef = doc(collectionRef);
+          t.set(newEventRef, {
+            type: "changeScene",
+            createdAt: data.createdAt + 1,
+            status: "waiting",
+            sceneName: value.parsed.sceneName,
+          });
+          break;
+        default:
+          break;
+      }
+      await t.update(commandToResolve.ref, {
+        ...data,
+        response: {
+          original: data.response.original + "\n" + value.original,
+          responses: newResponses,
+        },
+      });
+    });
+    await recursive();
+  };
+  await recursive();
+  await runTransaction(store, async (t) => {
+    const documentData = await t.get(commandToResolve.ref);
+    const data = documentData.data();
+    if (!data) {
+      throw new Error("data is null");
     }
+    t.update(commandToResolve.ref, {
+      ...data,
+      status: "done",
+    });
   });
 };
