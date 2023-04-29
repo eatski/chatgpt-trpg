@@ -30,8 +30,8 @@ export const room = z.object({
 const queue = z.object({
   type: z.string(),
   createdAt: z.number(),
-  status: z.enum(["waiting", "done", "failed","processing"]),
-})
+  status: z.enum(["waiting", "done", "failed", "processing"]),
+});
 
 type Queue = z.infer<typeof queue>;
 
@@ -62,7 +62,7 @@ export const userCommand = z.intersection(
     z.object({
       status: z.literal("processing"),
       response: userCommandResponse,
-    })
+    }),
   ]),
 );
 
@@ -92,19 +92,21 @@ export const changeScene = z.intersection(
     z.object({
       status: z.literal("processing"),
       response: changeSceneResponse,
-    })
+    }),
   ]),
 );
 
 export const sessionEvent = z.union([userCommand, changeScene]) satisfies Zod.Schema<Queue>;
 
-export const jsonlItem = z.union([z.object({
-  type: z.optional(z.literal("message")),
-  content: z.string(),
-  visibility: z.optional(visibility),
-}),z.object({
-  type: z.literal("command"),
-  command: z.literal("changeScene"),
-  sceneName: z.string(),
-})
-])
+export const jsonlItem = z.union([
+  z.object({
+    type: z.optional(z.literal("message")),
+    content: z.string(),
+    visibility: z.optional(visibility),
+  }),
+  z.object({
+    type: z.literal("command"),
+    command: z.literal("changeScene"),
+    sceneName: z.string(),
+  }),
+]);

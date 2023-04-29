@@ -15,10 +15,10 @@ type Props = {
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
-  const getScene = async (directory: string,name: string) => {
+  const getScene = async (directory: string, name: string) => {
     return {
       systemPrompt: (
-        await readFile(resolve(process.cwd(), "mocks", "scenarios", directory , `${name}.md`), "utf-8")
+        await readFile(resolve(process.cwd(), "mocks", "scenarios", directory, `${name}.md`), "utf-8")
       ).toString(),
     };
   };
@@ -45,8 +45,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
             title: "JSONL sample",
             description: "JSONL sample",
             scenes: {
-              default: await getScene("jsonl-sample","default"),
-              battle: await getScene("jsonl-sample","battle"),
+              default: await getScene("jsonl-sample", "default"),
+              battle: await getScene("jsonl-sample", "battle"),
             },
           },
         },
@@ -75,14 +75,14 @@ const CreateRoom = ({ scenarios }: Props) => {
       batch.set(roomRef, {
         createdAt: now,
         scenario: scenario.data,
-      })
+      });
       const eventRef = getCollectionRef(`rooms/${roomRef.id}/events`);
       batch.set(doc(eventRef), {
         type: "changeScene",
         createdAt: now,
         status: "waiting",
-        sceneName: "default"
-      })
+        sceneName: "default",
+      });
       await batch.commit();
       router.push(`/rooms/${roomRef.id}`); // ルームページにリダイレクトする
     } catch (error) {
